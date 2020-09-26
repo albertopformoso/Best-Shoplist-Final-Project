@@ -1,13 +1,8 @@
 ,product,price,weight_kg,supermarket
-0,frijoles bayos la sierra refritos en lata,15.5,0.58,superama
-1,frijoles negros la costeña refritos en lata,15.6,0.58,superama
-2,frijoles bayos la costeña refritos en lata,15.8,0.58,superama
-3,frijoles bayos la sierra refritos en lata,15.0,0.58,walmart
-4,frijoles negros la sierra refritos en lata,15.0,0.58,walmart
-5,frijoles negros la costeña refritos en lata,15.2,0.58,walmart
-6,frijoles bayos la costeña,15.5,0.58,soriana
-7,frijoles bayos la costeña enteros,13.45,0.46,soriana
-8,frijolin frijol negro,26.5,0.906,soriana
-9,frijoles enteros bayos,11.9,0.58,La Comer
-10,frijoles enteros negros,11.9,0.56,La Comer
-11,frijoles refritos bayos,15.0,0.58,La Comer
+0,refresco coca cola sin azúcar,72.0,0.355,superama
+1,refresco coca cola light,81.0,0.355,superama
+2,refresco coca cola,1.75,0.075,walmart
+3,refresco coca cola sin azúcar botella de,9.0,0.355,walmart
+4,refresco coca cola light botella de,9.0,0.355,walmart
+5,refresco coca-cola,9.5,0.355,soriana
+6,refresco coca-cola light,11.5,0.355,soriana
