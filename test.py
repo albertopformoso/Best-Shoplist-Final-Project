@@ -3,7 +3,7 @@
 #  ------------------------------------------------------------------------------------------
 from tkinter import *
 from tkinter.ttk import *
-import time, pandas as pd, re
+import time, requests, pandas as pd, re
 from pandastable import Table, TableModel
 from tqdm import tqdm
 from selenium import webdriver
@@ -59,16 +59,13 @@ def superama_search(products):
                     sup_weight_kg.append(temp)
             except:
                 sup_weight_kg.append(0)
-        progress_bar['value'] += val
-        master.update()
     browser.close()
-
 
     superama = {'product':sup_product,'price':sup_price,'weight_kg':sup_weight_kg}
     superama = pd.DataFrame(superama)
     superama['supermarket'] = 'superama'
-    
     return superama
+
 
 #  ------------------------------------------------------------------------------------------
 # Walmart Web Scrap Search
@@ -132,14 +129,13 @@ def walmart_search(products):
                         wal_weight_kg.append(temp)
                 except:
                     wal_weight_kg.append(0)
-        progress_bar['value'] += val
-        master.update()
     browser.close()
         
     walmart = {'product':wal_product,'price':wal_price,'weight_kg':wal_weight_kg}
     walmart = pd.DataFrame(walmart)
     walmart['supermarket'] = 'walmart'
     return walmart
+
 
 #  ------------------------------------------------------------------------------------------
 # Soriana Web Scrap Search
@@ -189,13 +185,10 @@ def soriana_search(products):
                     sor_weight_kg.append(temp)
             except:
                 sor_weight_kg.append(0)
-        progress_bar['value'] += val
-        master.update()
     browser.close()
     soriana = {'product':sor_product,'price':sor_price,'weight_kg':sor_weight_kg}
     soriana = pd.DataFrame(soriana)
     soriana['supermarket'] = 'soriana'
-
     if soriana.shape[0]==0:
         soriana = {'product':['none'],'price':[9999],'weight_kg':[0]}
         soriana = pd.DataFrame(soriana)
@@ -203,6 +196,7 @@ def soriana_search(products):
         return soriana
     else:
         return soriana
+
 
 #  ------------------------------------------------------------------------------------------
 # LaComer Web Scrap Search
@@ -251,15 +245,13 @@ def comer_search(products):
                     com_weight_kg.append(temp)
             except:
                 com_weight_kg.append(0)
-        progress_bar['value'] += val
-        master.update()
     time.sleep(1)
     browser.close()
     comer = {'product':com_product,'price':com_price,'weight_kg':com_weight_kg}
     comer = pd.DataFrame(comer)
     comer['supermarket'] = 'La Comer'
-    progress_bar['value'] += val
     return comer
+
 
 #  ------------------------------------------------------------------------------------------
 # Best Option Selector
@@ -270,9 +262,8 @@ def best_options(shop_lst, df):
     
     df_clean = pd.DataFrame()
     for product in shop_lst:
-        product = product.split()[0]
-        #print(product, type(product))
-        current_df = df[df['product'].astype(str).str.contains(r'%s' % product)]
+        # print(product)
+        current_df = df[df['product'].str.contains(product)]
         
         q1_weight, q3_weight = current_df['weight_kg'].quantile([0.05,0.95])
         q1_price, q3_price = current_df['price'].quantile([0.05,0.95])
@@ -289,6 +280,7 @@ def best_options(shop_lst, df):
     df_clean.reset_index(drop=True, inplace=True)
     return df_clean
 
+
 # Final shoplist print -----------------------------------------------------------------
 def final_shoplist(df, super_name):
     '''This function prints the best market to shop'''
@@ -297,27 +289,6 @@ def final_shoplist(df, super_name):
     print('Recommended shoplist:')
     print(df.to_markdown())
 
-def filter_selection(df, shop_lst):
-    temp_df = pd.DataFrame()
-    for product in shop_lst:
-        brand = product.split()[-1]
-        product = product.split()[0]
-        if product != brand:
-            temp = df[df['product'].astype(str).str.contains(r'%s' % product)]
-            temp = temp[temp['product'].astype(str).str.contains(r'%s' % brand)]
-            temp['rel'] = temp['price']/temp['weight_kg']
-            temp = temp[temp['rel'] == temp['rel'].min()]
-            temp.drop('rel', axis=1, inplace=True)
-            temp.drop_duplicates(subset=['price','weight_kg'], keep='first', inplace=True)
-            temp_df = pd.concat([temp_df, temp], axis = 0).reset_index(drop=True)
-        else:
-            temp = df[df['product'].astype(str).str.contains(r'%s' % product)]
-            temp['rel'] = temp['price']/temp['weight_kg']
-            temp = temp[temp['rel'] == temp['rel'].min()]
-            temp.drop('rel', axis=1, inplace=True)
-            temp.drop_duplicates(subset=['price','weight_kg'], keep='first', inplace=True)
-            temp_df = pd.concat([temp_df, temp], axis = 0).reset_index(drop=True)
-    return temp_df
 
 #  ------------------------------------------------------------------------------------------
 # Shoping Cart Creator
@@ -410,8 +381,7 @@ def shop_cart(df, shoplist, name):
 
 # Soriana -------------------------------            
     if name == 'soriana':
-        driver.close()
-        label = Label(master, text = '\nSorry, option currently not supported for Soriana', font='Helvetica 9'); label.pack()
+        label = Label(window, text = '\nSorry, option currently not supported for Soriana', font='Helvetica 9'); label.pack()
         
 # La Comer -------------------------------
     if name == 'la comer':
@@ -462,6 +432,7 @@ def shop_cart(df, shoplist, name):
             except:
                 pass
 
+
 def location(name):
     chrome_options = Options()
     chrome_options.add_experimental_option("prefs", { "profile.default_content_setting_values.geolocation": 1})
@@ -485,6 +456,7 @@ def location(name):
     superm.send_keys(name)
     superm.send_keys(Keys.ENTER)
 
+
 def recommended_list(df):
     newWindow = Toplevel(master) 
     newWindow.title("Recommended shop list") 
@@ -507,11 +479,12 @@ def multiple_lists(df):
     table = Table(f, dataframe=df, showtoolbar=True, showstatusbar=True)
     table.show()
 
+
 #  ------------------------------------------------------------------------------------------
 # Window settings
 #  ------------------------------------------------------------------------------------------
 master = Tk()
-master.title('CheapEx')
+master.title('Market Go')
 #master.resizable(False,True)
 master.iconbitmap('iFruit.ico')
 master.geometry("600x350")
@@ -520,7 +493,7 @@ master.geometry("600x350")
 #  ------------------------------------------------------------------------------------------
 # Window widgets
 #  ------------------------------------------------------------------------------------------
-label = Label(master, text = 'Welcome to CheapEx!', font='Helvetica 14'); label.pack()
+label = Label(master, text = 'Welcome to Market Go!', font='Helvetica 14'); label.pack()
 
 textbox = Text(master, font = 'Helvetica 14',width=50, height=3); textbox.pack()
 
@@ -536,19 +509,14 @@ def main_run(txt):
     # txt to list --------------------------
     shop_lst = txt.split(',')
     shop_lst = [x.strip().lower() for x in shop_lst]
+      
     label = Label(master, text = '\nSearching...', font='Helvetica 9'); label.pack()
-    global progress_bar
-    progress_bar = Progressbar(master, orient = 'horizontal', mode='determinate', maximum=100, value=0)
-    progress_bar.pack()
-    progress_bar['value'] = 0
-    global val
-    val = 100/(4*len(shop_lst)) # percentage grow by store (4 stores to search 'x' elements)
-    master.update()
+    
     # Web scraping -------------------------
-    superama_df = superama_search(shop_lst); master.update()
-    walmart_df  = walmart_search(shop_lst); master.update()
-    soriana_df  = soriana_search(shop_lst); master.update()
-    comer_df    = comer_search(shop_lst); master.update()
+    superama_df = superama_search(shop_lst)
+    walmart_df  = walmart_search(shop_lst)
+    soriana_df  = soriana_search(shop_lst)
+    comer_df    = comer_search(shop_lst)
     
     # Selection of products ----------------
     superama_df = best_options(shop_lst, superama_df)
@@ -561,52 +529,68 @@ def main_run(txt):
     print(full_df.to_markdown())
     full_df.to_csv('data/market_prices.csv')
     
-    superama_best = filter_selection(superama_df, shop_lst)
-    walmart_best  = filter_selection(walmart_df, shop_lst)
-    soriana_best  = filter_selection(soriana_df, shop_lst)
-    comer_best    = filter_selection(comer_df, shop_lst)
+    superama_best = pd.DataFrame()
+    walmart_best  = pd.DataFrame()
+    soriana_best  = pd.DataFrame()
+    comer_best    = pd.DataFrame()
+    
+    for product in shop_lst:        
+        temp = superama_df[superama_df['product'].str.contains(r'%s' % product)]
+        temp['rel'] = temp['price']/temp['weight_kg']
+        temp = temp[temp['rel'] == temp['rel'].min()]
+        temp.drop('rel', axis=1, inplace=True)
+        temp.drop_duplicates(subset=['price','weight_kg'], keep='first', inplace=True)
+        superama_best = pd.concat([superama_best, temp], axis = 0).reset_index(drop=True)
         
-    supermarkets = {superama_best['price'].sum():'superama', walmart_best['price'].sum():'walmart',
-                    soriana_best['price'].sum():'soriana', comer_best['price'].sum():'la comer'}
-#     print(supermarkets)
-#     display(pd.concat([superama_best, walmart_best, soriana_best, comer_best],axis=0))
-
-    mv = min(supermarkets.keys())
-    for df in [superama_best, walmart_best, soriana_best,comer_best]:
-        if df.shape[0] != len(shop_lst):
-            del supermarkets[mv]
-            mv = min(supermarkets.keys())
+        temp = walmart_df[walmart_df['product'].str.contains(r'%s' % product)]
+        temp['rel'] = temp['price']/temp['weight_kg']
+        temp = temp[temp['rel'] == temp['rel'].min()]
+        temp.drop('rel', axis=1, inplace=True)
+        temp.drop_duplicates(subset=['price','weight_kg'], keep='first', inplace=True)
+        walmart_best = pd.concat([walmart_best, temp], axis = 0).reset_index(drop=True)
+        
+        temp = soriana_df[soriana_df['product'].str.contains(r'%s' % product)]
+        temp['rel'] = temp['price']/temp['weight_kg']
+        temp = temp[temp['rel'] == temp['rel'].min()]
+        temp.drop('rel', axis=1, inplace=True)
+        temp.drop_duplicates(subset=['price','weight_kg'], keep='first', inplace=True)
+        soriana_best = pd.concat([soriana_best, temp], axis = 0).reset_index(drop=True)
+        
+        temp = comer_df[comer_df['product'].str.contains(r'%s' % product)]
+        temp['rel'] = temp['price']/temp['weight_kg']
+        temp = temp[temp['rel'] == temp['rel'].min()]
+        temp = temp[temp['rel'] == temp['rel'].min()]
+        temp.drop('rel', axis=1, inplace=True)
+        temp.drop_duplicates(subset=['price','weight_kg'], keep='first', inplace=True)
+        comer_best = pd.concat([comer_best, temp], axis = 0).reset_index(drop=True)
+        
+    supermarkets = {'superama':superama_best['price'].sum(), 'walmart':walmart_best['price'].sum(),
+                    'soriana':soriana_best['price'].sum(), 'la comer':comer_best['price'].sum()}
     
-    mv = min(supermarkets.keys())
-#     print(supermarkets)
-#     print(mv)
-
-    
-    if (supermarkets[mv] == 'superama') and (len(shop_lst)==superama_best.shape[0]):
+    if (min(supermarkets) == 'superama') & (len(shop_lst)==superama_best.shape[0]):
         final_shoplist(superama_best, 'superama')
         name = 'superama'
         final_list = superama_best
-    elif (supermarkets[mv] == 'walmart') and (len(shop_lst)==walmart_best.shape[0]):
+    elif (min(supermarkets) == 'walmart') & (len(shop_lst)==walmart_best.shape[0]):
         final_shoplist(walmart_best, 'walmart')
         name = 'walmart'
         final_list = walmart_best
-    elif (supermarkets[mv] == 'soriana') and (len(shop_lst)==soriana_best.shape[0]):
+    elif (min(supermarkets) == 'soriana') & (len(shop_lst)==soriana_best.shape[0]):
         final_shoplist(soriana_best, 'soriana')
         name = 'soriana'
         final_list = soriana_best
-    elif (supermarkets[mv] == 'la comer') and (len(shop_lst)==comer_best.shape[0]):
+    elif (min(supermarkets) == 'la comer') & (len(shop_lst)==comer_best.shape[0]):
         final_shoplist(comer_best, 'la comer')
         name = 'la comer'
         final_list = comer_best
     else:
-        print('error')
         final_shoplist(walmart_best, 'walmart')
         name = 'walmart'
         final_list = walmart_best
 
     final_list.to_csv('data/recommended_shoping_list.csv')
     
-    progress_bar.pack_forget()
+    
     label.pack_forget()
     label = Label(master, text = '\nReady!', font='Helvetica 9'); label.pack()
     msg = Label(master, text = '\nSelect an option:', font='Helvetica 9'); msg.pack()
@@ -623,6 +607,7 @@ def main_run(txt):
     near.pack()
 
 master.mainloop()
+
 
 
 
