@@ -27,7 +27,7 @@ def superama_search(products):
     print('Seraching on Superama...')
     browser = webdriver.Chrome(chrome_options=options)
     #browser = webdriver.Chrome()
-    for product in tqdm(products):
+    for product in products:
         url = 'https://www.superama.com.mx/buscar/%s' % product
         
         #browser.maximize_window()
@@ -82,7 +82,7 @@ def walmart_search(products):
     wal_product, wal_price, wal_weight_kg = [], [], []
     print('Seraching on Walmart...')
     browser = webdriver.Chrome(chrome_options=options)
-    for product in tqdm(products):
+    for product in products:
         url = 'https://super.walmart.com.mx/productos?Ntt=%s' % product
         
         #browser.maximize_window()
@@ -153,7 +153,7 @@ def soriana_search(products):
     sor_product, sor_price, sor_weight_kg = [], [], []
     print('Seraching on Soriana...')
     browser = webdriver.Chrome(chrome_options=options)
-    for product in tqdm(products):
+    for product in products:
         url = 'https://superentucasa.soriana.com/default.aspx?p=13365&postback=1&Txt_Bsq_Descripcion=%s&cantCeldas=0&minCeldas=0' % product
         
         #browser.maximize_window()
@@ -217,7 +217,7 @@ def comer_search(products):
     print('Seraching on La Comer...')
     browser = webdriver.Chrome(chrome_options=options)
     #browser = webdriver.Chrome()
-    for product in tqdm(products):
+    for product in products:
         url = 'https://www.lacomer.com.mx/lacomer/goBusqueda.action?succId=287&ver=mislistas&succFmt=100&criterio=%s#/%s' % (product,product)
         
         #browser.maximize_window()
@@ -511,7 +511,7 @@ def multiple_lists(df):
 # Window settings
 #  ------------------------------------------------------------------------------------------
 master = Tk()
-master.title('CheapEx')
+master.title('Shoplist')
 #master.resizable(False,True)
 master.iconbitmap('iFruit.ico')
 master.geometry("600x350")
@@ -520,7 +520,7 @@ master.geometry("600x350")
 #  ------------------------------------------------------------------------------------------
 # Window widgets
 #  ------------------------------------------------------------------------------------------
-label = Label(master, text = 'Welcome to CheapEx!', font='Helvetica 14'); label.pack()
+label = Label(master, text = 'Welcome to Shoplist!', font='Helvetica 14'); label.pack()
 
 textbox = Text(master, font = 'Helvetica 14',width=50, height=3); textbox.pack()
 
