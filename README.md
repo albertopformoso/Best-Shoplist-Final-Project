@@ -48,5 +48,6 @@ For the shoping cart creation the program will take the recommended shoping list
 For the nearest supermarket option, with Selenium your location is obtained and then in google maps is dispayed the nearest supermarket in relation with were you are.
 
 ### Next Steps
-Currently it has some limitations such as beign spesific with what you want, the fewer words the better, if you want to search by brand it has to be at the end of the string. So it needs an improvement in regex so it can decide more easly which is the product and which is the brand.
-Improve the displayed info to a more user friendly design. 
++ Currently it has some limitations such as beign spesific with what you want, the fewer words the better, if you want to search by brand it has to be at the end of the string. So it needs an improvement in regex so it can decide more easly which is the product and which is the brand.
++ Improve the displayed information to a more user friendly design.
++ Make a more efficient scrap with Scrapy
